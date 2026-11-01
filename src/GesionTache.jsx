@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useLocalStorage } from "@uidotdev/usehooks";
-
+import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell, ResponsiveContainer } from "recharts";
+//importation des donnees local
+// import { useLocalStorage } from "@uidotdev/usehooks";
 
 export default function Acceuil(){
 
@@ -9,11 +9,34 @@ export default function Acceuil(){
     const[dateDebut, setdateDebut] = useState("");
     const[dateFin, setdateFin] = useState("");
     const[name, setinputName] = useState("");
-    const[tache, setTache] = useLocalStorage("Tache", []);
     const[statut, setStatut] = useState("A Faire");
     const[editIndex, setEditIndex] = useState(null);
     const[search, setSearch] = useState("");
-     //Store data
+    const[tache, setTache] = useState([]);
+    const[loaded, setLoaded] = useState(false);
+
+    //Chargement des donnees mn Json
+    useEffect(() => {
+        const saved = localStorage.getItem("Tache");
+
+        if (saved) {
+            setTache(JSON.parse(saved));
+            setLoaded(true);
+        } else {
+            fetch("/tache.json")
+                .then((res) => res.json())
+                .then((data) => setTache(data))
+                .catch((err) => console.error(err))
+                .finally(() => setLoaded(true));
+        }
+    },[]);
+
+    //Sauvegarde kol mra tache kaybdel
+    useEffect(() => {
+        if (loaded) {
+            localStorage.setItem("Tache", JSON.stringify(tache));
+        }
+    }, [tache, loaded]);
     
     // Ajouter une nouvelle tache
     const AjouterBtn = () => {
@@ -21,13 +44,13 @@ export default function Acceuil(){
             alert("Veuillez remplir tous les champs!");
             return;
         }
-        if (dateFin <= dateDebut){
-            setTache([...tache, nouvelleTache]);
-        }else {
-            alert("La date de fin doit être supérieure à la date de début.")
+        if (dateFin < dateDebut) {
+            alert("La date de fin doit être supérieure à la date de début!");
+            return;
         }
 
     const nouvelleTache = {
+        id: editIndex ?? Date.now(),
         text: inputTitle,
         dateDebut: dateDebut,
         dateFin: dateFin,

@@ -9,6 +9,7 @@ Application web de **gestion des tâches** développée avec React. Elle permet 
 - Supprimer une tâche
 - Trois statuts : **A Faire**, **En Cours**, **Termine**
 - Tâches terminées barrées dans le tableau
+- Conservation des tâches après actualisation grâce à localStorage
 - Saisir un mot dans la barre de recherche pour afficher uniquement les tâches correspondantes
 - Graphique en barres (Recharts) mis à jour automatiquement
 - Interface sombre
